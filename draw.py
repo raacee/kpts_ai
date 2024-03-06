@@ -1,29 +1,28 @@
-import cv2
-import numpy as np
 from body import KEYPOINT_EDGE_INDS_TO_COLOR
+import numpy as np
+import cv2 as cv
 
 
 def _keypoints_and_edges_for_display(keypoints_with_scores,
                                      height,
                                      width,
-                                     keypoint_threshold=0.11):
+                                     keypoint_threshold=0.4):
     """Returns high confidence keypoints and edges for visualization.
 
-  Args:
-    keypoints_with_scores: A numpy array with shape [1, 1, 17, 3] representing
-      the keypoint coordinates and scores returned from the MoveNet model.
-    height: height of the image in pixels.
-    width: width of the image in pixels.
-    keypoint_threshold: minimum confidence score for a keypoint to be
-      visualized.
+    Args:
+      keypoints_with_scores: A numpy array with shape [1, 1, 17, 3] representing
+        the keypoint coordinates and scores returned from the MoveNet model.
+      height: height of the image in pixels.
+      width: width of the image in pixels.
+      keypoint_threshold: minimum confidence score for a keypoint to be
+        visualized.
 
-  Returns:
-    A (keypoints_xy, edges_xy, edge_colors) containing:
-      * the coordinates of all keypoints of all detected entities;
-      * the coordinates of all skeleton edges of all detected entities;
-      * the colors in which the edges should be plotted.
-  """
-
+    Returns:
+      A (keypoints_xy, edges_xy, edge_colors) containing:
+        * the coordinates of all keypoints of all detected entities;
+        * the coordinates of all skeleton edges of all detected entities;
+        * the colors in which the edges should be plotted.
+    """
     keypoints_all = []
     keypoint_edges_all = []
     edge_colors = []
@@ -57,49 +56,48 @@ def _keypoints_and_edges_for_display(keypoints_with_scores,
         edges_xy = np.stack(keypoint_edges_all, axis=0)
     else:
         edges_xy = np.zeros((0, 2, 2))
+
     return keypoints_xy, edges_xy, edge_colors
 
 
-def draw_prediction_on_image(image, keypoints_with_scores, crop_region=None):
-    """Draws the keypoint predictions on the image.
+def draw_prediction_on_image(image, keypoints_with_scores):
+    """Draws the keypoint predictions on image.
 
     Args:
-        image: A numpy array with shape [height, width, channel] representing
-            the pixel values of the input image.
-        keypoints_with_scores: A numpy array with shape [1, 1, 17, 3] representing
-            the keypoint coordinates and scores returned from the MoveNet model.
-        crop_region: A dictionary that defines the coordinates of the bounding box
-            of the crop region in normalized coordinates.
+      image: A numpy array with shape [height, width, channel] representing the
+        pixel values of the input image.
+      keypoints_with_scores: A numpy array with shape [1, 1, 17, 3] representing
+        the keypoint coordinates and scores returned from the MoveNet model.
+      crop_region: A dictionary that defines the coordinates of the bounding box
+        of the crop region in normalized coordinates (see the init_crop_region
+        function below for more detail). If provided, this function will also
+        draw the bounding box on the image.
+      output_image_height: An integer indicating the height of the output image.
+        Note that the image aspect ratio will be the same as the input image.
 
     Returns:
-        A numpy array with shape [height, width, channel] representing the
-        image overlaid with keypoint predictions.
+      A numpy array with shape [out_height, out_width, channel] representing the
+      image overlaid with keypoint predictions.
     """
+    height, width, channel = image.shape
 
-    height, width, _, _ = image.shape
-    output_image = image.copy()
+    (keypoint_locs, keypoint_edges,
+     edge_colors) = _keypoints_and_edges_for_display(
+         keypoints_with_scores, height, width)
+    radius = 1
+    color = (255, 0, 255)
+    thickness = 1
+    keypoint_locs = keypoint_locs.astype(int)
+    keypoint_edges = keypoint_edges.astype(int)
 
-    (keypoint_locs, keypoint_edges, _) = _keypoints_and_edges_for_display(
-        keypoints_with_scores, height, width)
+    # Draw the keypoints on the picture
+    for keypoint_coords in keypoint_locs:
+        image = cv.circle(image, tuple(keypoint_coords), radius, color, thickness)
 
-    # Draw keypoints
-    for loc in keypoint_locs:
-        cv2.circle(output_image, tuple(map(int, loc)), 4, (255, 20, 147), -1)
+    # Draw the lines between each keypoints in edges
+    for edge, edge_color in zip(keypoint_edges, edge_colors):
+        start_point = edge[0]
+        end_point = edge[1]
+        image = cv.line(image, start_point, end_point, color, thickness)
 
-    # Draw skeleton edges
-    for edge in keypoint_edges:
-        cv2.line(output_image, tuple(map(int, edge[0])), tuple(map(int, edge[1])), (255, 20, 147), 2)
-
-    # Draw crop region bounding box
-    if crop_region is not None:
-        xmin = max(crop_region['x_min'] * width, 0.0)
-        ymin = max(crop_region['y_min'] * height, 0.0)
-        rec_width = min(crop_region['x_max'], 0.99) * width - xmin
-        rec_height = min(crop_region['y_max'], 0.99) * height - ymin
-        cv2.rectangle(output_image,
-                      (int(xmin), int(ymin)),
-                      (int(xmin + rec_width),
-                       int(ymin + rec_height)),
-                      (0, 0, 255), 2)
-
-    return output_image
+    return image

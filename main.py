@@ -8,6 +8,7 @@ def main():
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
+
     while True:
         # Capture frame-by-frame
         ret, frame = cap.read()
@@ -17,14 +18,12 @@ def main():
             print("Can't receive frame (stream end?). Exiting ...")
             break
 
-        # Make predictions and draw on image
-        frame = cv.resize(frame, (192, 192))
-        frame = frame.reshape((1, *frame.shape))
-        kpts = get_keypoints(frame)
-        image = draw_prediction_on_image(frame, kpts)
+        resized_frame = cv.resize(frame, (192, 192))
+        kpts = get_keypoints(resized_frame.reshape(1, *resized_frame.shape))
+        image_w_kpts = draw_prediction_on_image(resized_frame, kpts)
+        image_w_kpts = image_w_kpts.reshape((192, 192, 3))
 
-        # Display the resulting frame
-        cv.imshow('frame', image)
+        cv.imshow('main', cv.resize(image_w_kpts, (640,480)))
         if cv.waitKey(1) == ord('q'):
             break
 

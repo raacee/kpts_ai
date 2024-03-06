@@ -1,3 +1,4 @@
+
 # Dictionary that maps from joint names to keypoint indices.
 KEYPOINT_DICT = {
     'nose': 0,
@@ -40,3 +41,4 @@ KEYPOINT_EDGE_INDS_TO_COLOR = {
     (12, 14): 'c',
     (14, 16): 'c'
 }
+
