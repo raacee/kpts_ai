@@ -1,4 +1,5 @@
-from body import KEYPOINT_EDGE_INDS_TO_COLOR
+from body import KEYPOINT_EDGE_INDS_TO_COLOR, color_from_angle
+import math
 import numpy as np
 import cv2 as cv
 
@@ -6,7 +7,7 @@ import cv2 as cv
 def _keypoints_and_edges_for_display(keypoints_with_scores,
                                      height,
                                      width,
-                                     keypoint_threshold=0.4):
+                                     keypoint_threshold=0.35):
     """Returns high confidence keypoints and edges for visualization.
 
     Args:
@@ -25,7 +26,7 @@ def _keypoints_and_edges_for_display(keypoints_with_scores,
     """
     keypoints_all = []
     keypoint_edges_all = []
-    edge_colors = []
+    angles = []
     num_instances, _, _, _ = keypoints_with_scores.shape
     for idx in range(num_instances):
         kpts_x = keypoints_with_scores[0, idx, :, 1]
@@ -37,7 +38,7 @@ def _keypoints_and_edges_for_display(keypoints_with_scores,
             kpts_scores > keypoint_threshold, :]
         keypoints_all.append(kpts_above_thresh_absolute)
 
-        for edge_pair, color in KEYPOINT_EDGE_INDS_TO_COLOR.items():
+        for edge_pair in KEYPOINT_EDGE_INDS_TO_COLOR:
             if (kpts_scores[edge_pair[0]] > keypoint_threshold and
                     kpts_scores[edge_pair[1]] > keypoint_threshold):
                 x_start = kpts_absolute_xy[edge_pair[0], 0]
@@ -46,7 +47,7 @@ def _keypoints_and_edges_for_display(keypoints_with_scores,
                 y_end = kpts_absolute_xy[edge_pair[1], 1]
                 line_seg = np.array([[x_start, y_start], [x_end, y_end]])
                 keypoint_edges_all.append(line_seg)
-                edge_colors.append(color)
+
     if keypoints_all:
         keypoints_xy = np.concatenate(keypoints_all, axis=0)
     else:
@@ -57,7 +58,7 @@ def _keypoints_and_edges_for_display(keypoints_with_scores,
     else:
         edges_xy = np.zeros((0, 2, 2))
 
-    return keypoints_xy, edges_xy, edge_colors
+    return keypoints_xy, edges_xy, angles
 
 
 def draw_prediction_on_image(image, keypoints_with_scores):
@@ -81,8 +82,7 @@ def draw_prediction_on_image(image, keypoints_with_scores):
     """
     height, width, channel = image.shape
 
-    (keypoint_locs, keypoint_edges,
-     edge_colors) = _keypoints_and_edges_for_display(
+    keypoint_locs, keypoint_edges, angles = _keypoints_and_edges_for_display(
          keypoints_with_scores, height, width)
     radius = 1
     color = (255, 0, 255)
@@ -90,14 +90,17 @@ def draw_prediction_on_image(image, keypoints_with_scores):
     keypoint_locs = keypoint_locs.astype(int)
     keypoint_edges = keypoint_edges.astype(int)
 
+    print(keypoint_edges)
+
     # Draw the keypoints on the picture
     for keypoint_coords in keypoint_locs:
         image = cv.circle(image, tuple(keypoint_coords), radius, color, thickness)
 
     # Draw the lines between each keypoints in edges
-    for edge, edge_color in zip(keypoint_edges, edge_colors):
+    for edge, angle in zip(keypoint_edges, angles):
         start_point = edge[0]
         end_point = edge[1]
+        color = color_from_angle(angle)
         image = cv.line(image, start_point, end_point, color, thickness)
 
     return image

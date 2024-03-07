@@ -1,3 +1,4 @@
+import math
 
 # Dictionary that maps from joint names to keypoint indices.
 KEYPOINT_DICT = {
@@ -21,24 +22,25 @@ KEYPOINT_DICT = {
 }
 
 # Maps bones to a matplotlib color name.
-KEYPOINT_EDGE_INDS_TO_COLOR = {
-    (0, 1): 'm',
-    (0, 2): 'c',
-    (1, 3): 'm',
-    (2, 4): 'c',
-    (0, 5): 'm',
-    (0, 6): 'c',
-    (5, 7): 'm',
-    (7, 9): 'm',
-    (6, 8): 'c',
-    (8, 10): 'c',
-    (5, 6): 'y',
-    (5, 11): 'm',
-    (6, 12): 'c',
-    (11, 12): 'y',
-    (11, 13): 'm',
-    (13, 15): 'm',
-    (12, 14): 'c',
-    (14, 16): 'c'
-}
+KEYPOINT_EDGE_INDS_TO_COLOR = [
+    (5, 7),
+    (7, 9),
+    (6, 8),
+    (8, 10),
+    (5, 6),
+    (5, 11),
+    (6, 12),
+    (11, 12),
+    (11, 13),
+    (13, 15),
+    (12, 14),
+    (14, 16)
+]
 
+EDGE_ANGLES = [
+
+]
+
+
+def color_from_angle(angle):
+    return 0, 255 - math.sin(angle) * 255, 255 * math.sin(angle)
