@@ -1,22 +1,17 @@
-import cv2 as cv
 from draw import draw_prediction_on_image
 from model import get_keypoints
-
+from picamera2 import Picamera2
+import cv2 as cv
+import time
 
 def main():
-    cap = cv.VideoCapture(0)
-    if not cap.isOpened():
-        print("Cannot open camera")
-        exit()
+    camera = Picamera2()
+    camera.start()
+    time.sleep(1)
 
     while True:
         # Capture frame-by-frame
-        ret, frame = cap.read()
-
-        # if frame is read correctly ret is True
-        if not ret:
-            print("Can't receive frame (stream end?). Exiting ...")
-            break
+        frame = camera.capture_array()
 
         resized_frame = cv.resize(frame, (192, 192))
         keypoints_with_scores = get_keypoints(resized_frame.reshape(1, *resized_frame.shape))
