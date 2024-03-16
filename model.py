@@ -29,6 +29,5 @@ def get_keypoints(input_image):
     # Invoke inference.
     interpreter.invoke()
     # Get the model prediction.
-    keypoints_with_scores = interpreter.get_tensor(output_details[0]['index'])
+    return interpreter.get_tensor(output_details[0]['index'])
 
-    return keypoints_with_scores
