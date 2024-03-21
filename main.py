@@ -4,6 +4,7 @@ from picamera2 import Picamera2
 import cv2 as cv
 import time
 
+
 def main():
     camera = Picamera2()
     camera.start()
@@ -22,7 +23,7 @@ def main():
             break
 
     # When everything done, release the capture
-    cap.release()
+    camera.stop()
     cv.destroyAllWindows()
 
 
