@@ -1,5 +1,4 @@
 from body import *
-import numpy as np
 import cv2 as cv
 from model import scale_keypoints, edge_over_threshold
 
