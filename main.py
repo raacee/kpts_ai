@@ -13,6 +13,8 @@ def main():
     while True:
         # Capture frame-by-frame
         frame = camera.capture_array()
+        frame = frame[:,:,:3]
+        frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
         resized_frame = cv.resize(frame, (192, 192))
         keypoints_with_scores = get_keypoints(resized_frame.reshape(1, *resized_frame.shape))
