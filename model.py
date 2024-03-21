@@ -31,3 +31,17 @@ def get_keypoints(input_image):
     # Get the model prediction.
     return interpreter.get_tensor(output_details[0]['index'])
 
+
+def edge_over_threshold(edge, scores, threshold):
+    return scores[edge[0]] > threshold and scores[edge[1]] > threshold
+
+
+def scale_keypoints(keypoints_with_scores, width=1, height=1):
+    kpts_x = keypoints_with_scores[0, 0, :, 1]
+    kpts_y = keypoints_with_scores[0, 0, :, 0]
+    scores = keypoints_with_scores[0, 0, :, 2]
+    kpts_absolute_xy = np.stack(
+        [width * np.array(kpts_x), height * np.array(kpts_y), scores],
+        axis=-1
+    )
+    return kpts_absolute_xy

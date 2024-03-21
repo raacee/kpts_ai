@@ -1,21 +1,7 @@
 from body import *
 import numpy as np
 import cv2 as cv
-
-
-def edge_over_threshold(edge, scores, threshold):
-    return scores[edge[0]] > threshold and scores[edge[1]] > threshold
-
-
-def scale_keypoints(keypoints_with_scores, width=1, height=1):
-    kpts_x = keypoints_with_scores[0, 0, :, 1]
-    kpts_y = keypoints_with_scores[0, 0, :, 0]
-    scores = keypoints_with_scores[0, 0, :, 2]
-    kpts_absolute_xy = np.stack(
-        [width * np.array(kpts_x), height * np.array(kpts_y), scores],
-        axis=-1
-    )
-    return kpts_absolute_xy
+from model import scale_keypoints, edge_over_threshold
 
 
 def draw_prediction_on_image(image, keypoints_with_scores, threshold=0.35):
@@ -54,12 +40,11 @@ def draw_prediction_on_image(image, keypoints_with_scores, threshold=0.35):
     for edge1, edge2 in ANGLES_TO_MONITOR:
         # Create vectors for each edge in the pair
         if edge_over_threshold(edge1, scores, threshold) and edge_over_threshold(edge2, scores, threshold):
-            edge_coordinates1 = np.array((keypoints_locs[edge1[0]], keypoints_locs[edge1[1]]))
-            edge_coordinates2 = np.array((keypoints_locs[edge2[0]], keypoints_locs[edge2[1]]))
-            vec1 = vec_from_edge(edge_coordinates1)
-            vec2 = vec_from_edge(edge_coordinates2)
-
-            angle = calculate_angle(vec1, vec2)
+            (angle,
+             edge_coordinates1,
+             edge_coordinates2,
+             vec1,
+             vec2) = angle_from_keypoints(keypoints_locs, edge1, edge2)
             color = color_from_angle(angle)
 
             image = cv.line(image, edge_coordinates1[0], edge_coordinates1[1], color, 1)

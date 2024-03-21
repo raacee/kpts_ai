@@ -114,3 +114,12 @@ def color_from_angle(angle):
 
     """
     return 0, 255 - math.sin(angle) * 255, 255 * math.sin(angle)
+
+
+def angle_from_keypoints(keypoints_locs, edge1, edge2):
+    edge_coordinates1 = np.array((keypoints_locs[edge1[0]], keypoints_locs[edge1[1]]))
+    edge_coordinates2 = np.array((keypoints_locs[edge2[0]], keypoints_locs[edge2[1]]))
+    vec1 = vec_from_edge(edge_coordinates1)
+    vec2 = vec_from_edge(edge_coordinates2)
+
+    return calculate_angle(vec1, vec2), edge_coordinates1, edge_coordinates2, vec1, vec2
