@@ -1,11 +1,9 @@
 from gpiozero import LED
 from picamera2 import Picamera2
-
 from light import blink_fast
 from model import get_keypoints
-from body import ANGLES_TO_MONITOR, vec_from_edge, calculate_angle, angle_from_keypoints
+from body import ANGLES_TO_MONITOR, angle_from_keypoints
 from draw import edge_over_threshold, scale_keypoints
-import numpy as np
 import cv2 as cv
 
 camera = Picamera2()
