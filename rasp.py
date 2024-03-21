@@ -1,6 +1,5 @@
-from gpiozero import LED
 from picamera2 import Picamera2
-from light import blink_fast
+from light import blink_fast, led
 from model import get_keypoints
 from body import ANGLES_TO_MONITOR, angle_from_keypoints
 from draw import edge_over_threshold, scale_keypoints
@@ -8,7 +7,7 @@ import cv2 as cv
 
 camera = Picamera2()
 threshold = 0.35
-led = LED(17)
+
 
 camera.start()
 while True:
@@ -26,7 +25,7 @@ while True:
         if edge_over_threshold(edge1, scores, threshold) and edge_over_threshold(edge2, scores, threshold):
             angle = angle_from_keypoints(keypoints_with_scores, edge1, edge2)
             if angle > 180:
-                blink_fast(0.1)
+                blink_fast(t=0.1, d=5)
             else:
                 led.off()
 
