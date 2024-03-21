@@ -1,8 +1,11 @@
 from gpiozero import LED
 from picamera2 import Picamera2
+
+from light import blink_fast
 from model import get_keypoints
 from body import ANGLES_TO_MONITOR, vec_from_edge, calculate_angle
 from draw import edge_over_threshold, scale_keypoints
+from time import sleep
 import numpy as np
 import cv2 as cv
 
@@ -30,7 +33,7 @@ while True:
             vec2 = vec_from_edge(edge_coordinates2)
             angle = calculate_angle(vec1, vec2)
             if angle > 180:
-                led.on()
+                blink_fast(0.1)
             else:
                 led.off()
 
