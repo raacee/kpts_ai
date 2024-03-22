@@ -22,18 +22,14 @@ def draw_prediction_on_image(image, keypoints_with_scores, threshold=0.35):
 
     keypoints_with_scores = scale_keypoints(keypoints_with_scores, width=width, height=height)
 
-    radius = 2
-    thickness = -1
     keypoints_locs = keypoints_with_scores[:, :2].astype(int)
     scores = keypoints_with_scores[:, 2]
 
-    color = (255, 255, 0)
+    image = draw_keypoints(image, keypoints_locs, scores, threshold)
+    image, drawn_edges = draw_edges_angles(image, keypoints_locs, scores, threshold)
+    image = draw_edges_lines(image, drawn_edges, keypoints_locs, scores, threshold)
 
-	image = draw_keypoints(image, keypoints_locs, scores, threshold)
-	image, drawn_edges = draw_edges_angles(image, keypoints_locs, scores)
-	image = draw_edges_lines(image, drawn_edges, keypoints_locs, scores, threshold)
-	
-	return image
+    return image
 
 
 def draw_edges_lines(image, drawn_edges, keypoints_locs, scores, threshold):
@@ -47,18 +43,22 @@ def draw_edges_lines(image, drawn_edges, keypoints_locs, scores, threshold):
                 image = cv.line(image, tuple(start_point), tuple(end_point), color, 1)
                 drawn_edges.add(edge)
 
-	return image
-    
-def draw_keypoints(image, keypoints_locs, scores, threshold):
-	 # Draw the keypoints on the picture
+    return image
+
+
+def draw_keypoints(image, keypoints_locs, scores, threshold, radius=2, thickness=-1):
+    color = 255, 0, 255
+
+    # Draw the keypoints on the picture
     for keypoint_coords, score in zip(keypoints_locs, scores):
         if score > threshold:
             image = cv.circle(image, tuple(keypoint_coords[:2]), radius, color, thickness)
-    
+
     return image
-    
-def draw_edges_angles(image, keypoints_locs, scores):
-	drawn_edges = set()
+
+
+def draw_edges_angles(image, keypoints_locs, scores, threshold):
+    drawn_edges = set()
     # Calculates angles between edges for edges to be monitored
     for edge1, edge2 in ANGLES_TO_MONITOR:
         # Create vectors for each edge in the pair
@@ -75,6 +75,5 @@ def draw_edges_angles(image, keypoints_locs, scores):
 
         drawn_edges.add(edge1)
         drawn_edges.add(edge2)
-     
-     return image, drawn_edges
-	
+
+    return image, drawn_edges
