@@ -59,10 +59,10 @@ def led_detect(camera_element):
     frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
     resized_frame = cv.resize(frame, (192, 192))
-    keypoints_with_scores = scale_keypoints(get_keypoints(resized_frame.reshape(1, *resized_frame.shape)))
-
-    keypoints_locs = keypoints_with_scores[:, :2].astype(int)
-    scores = keypoints_with_scores[:, 2]
+    keypoints_with_scores = get_keypoints(resized_frame.reshape(1, *resized_frame.shape))
+    keypoints_with_scores_scaled = scale_keypoints(keypoints_with_scores)
+    keypoints_locs = keypoints_with_scores_scaled[:, :2].astype(int)
+    scores = keypoints_with_scores_scaled[:, 2]
 
     for edge1, edge2 in ANGLES_TO_MONITOR:
         # Create vectors for each edge in the pair
