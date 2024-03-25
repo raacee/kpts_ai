@@ -26,7 +26,7 @@ def main(show=True):
     if show:
         while True:
             # Capture frame-by-frame
-            frame, keypoints_locs, scores = led_detect()
+            frame, keypoints_locs, scores = led_detect(camera)
 
             frame = draw_keypoints(frame, keypoints_locs, scores, threshold)
             frame, drawn_edges = draw_edges_angles(frame, keypoints_locs, scores, threshold)
@@ -38,7 +38,7 @@ def main(show=True):
     else:
         while True:
             try:
-                led_detect()
+                led_detect(camera)
             except KeyboardInterrupt:
                 break
 
@@ -47,13 +47,15 @@ def main(show=True):
     cv.destroyAllWindows()
 
 
-def led_detect():
+def led_detect(camera_element):
     """
     Blinks led according to angles measured between monitored edges
+    Args:
+        camera_element: Camera passed as a parameter that will be capturing images
     Returns:
         None
     """
-    frame = camera.capture_array()
+    frame = camera_element.capture_array()
     frame = frame[:, :, :3]
     frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
