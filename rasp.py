@@ -28,8 +28,8 @@ def main(show=True):
     if show:
         while True:
             # Capture frame-by-frame
-            frame, keypoints_locs, scores = led_detect(camera)
-            frame = draw_prediction_on_image(frame, np.stack([keypoints_locs, scores], axis=1))
+            frame, keypoints_with_scores, _, _ = led_detect(camera)
+            frame = draw_prediction_on_image(frame, keypoints_with_scores)
             cv.imshow('main', cv.resize(frame, (640, 480)))
 
             if cv.waitKey(1) == ord('q'):
@@ -73,7 +73,7 @@ def led_detect(camera_element):
             else:
                 led.off()
 
-    return frame, keypoints_locs, scores
+    return frame, keypoints_with_scores, keypoints_locs, scores
 
 
 if __name__ == "__main__":
