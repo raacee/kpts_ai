@@ -7,7 +7,7 @@ def draw_prediction_on_image(image, keypoints_with_scores, threshold=0.35):
     """Draws the keypoint predictions on image.
 
     Args:
-      threshold: Threshold underwhich a keypoint prediction is ignored
+      threshold: Threshold under which a keypoint prediction is ignored
       image: A numpy array with shape [height, width, channel] representing the
         pixel values of the input image.
       keypoints_with_scores: A numpy array with shape [1, 1, 17, 3] representing
