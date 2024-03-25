@@ -1,6 +1,3 @@
-import sys
-
-import numpy as np
 from picamera2 import Picamera2
 from gpiozero import LED
 from model import get_keypoints
@@ -67,7 +64,7 @@ def led_detect(camera_element):
     for edge1, edge2 in ANGLES_TO_MONITOR:
         # Create vectors for each edge in the pair
         if edge_over_threshold(edge1, scores, threshold) and edge_over_threshold(edge2, scores, threshold):
-            angle, _, _, _, _ = angle_from_keypoints(keypoints_with_scores, edge1, edge2)
+            angle, _, _, _, _ = angle_from_keypoints(keypoints_with_scores_scaled, edge1, edge2)
             if math.sin(angle) > 0.5:
                 led.blink(0.1, 0.1, 15)
             else:
