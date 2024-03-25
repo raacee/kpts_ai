@@ -56,8 +56,11 @@ def led_detect(camera_element):
     frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
     resized_frame = cv.resize(frame, (192, 192))
+
+    height, width, _ = resized_frame.shape
+
     keypoints_with_scores = get_keypoints(resized_frame.reshape(1, *resized_frame.shape))
-    keypoints_with_scores_scaled = scale_keypoints(keypoints_with_scores)
+    keypoints_with_scores_scaled = scale_keypoints(keypoints_with_scores, width=width, height=height)
     keypoints_locs = keypoints_with_scores_scaled[:, :2].astype(int)
     scores = keypoints_with_scores_scaled[:, 2]
 
