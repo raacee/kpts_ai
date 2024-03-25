@@ -25,8 +25,11 @@ def main(show=True):
     if show:
         while True:
             # Capture frame-by-frame
-            frame, keypoints_with_scores, _, _ = led_detect(camera)
-            frame = draw_prediction_on_image(frame, keypoints_with_scores)
+            frame, keypoints_locs, scores = led_detect(camera)
+            frame = draw_keypoints(frame, keypoints_locs, scores, threshold)
+            frame, drawn_edges = draw_edges_angles(frame, keypoints_locs, scores, threshold)
+            frame = draw_edges_lines(frame, drawn_edges, keypoints_locs, scores, threshold)
+
             cv.imshow('main', cv.resize(frame, (640, 480)))
 
             if cv.waitKey(1) == ord('q'):
@@ -73,7 +76,7 @@ def led_detect(camera_element):
             else:
                 led.off()
 
-    return frame, keypoints_with_scores, keypoints_locs, scores
+    return frame, keypoints_locs, scores
 
 
 if __name__ == "__main__":
