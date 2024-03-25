@@ -1,3 +1,5 @@
+import sys
+
 from picamera2 import Picamera2
 from gpiozero import LED
 from model import get_keypoints
@@ -11,7 +13,7 @@ threshold = 0.35
 led = LED(17)
 
 
-def main(show=False):
+def main(show=True):
     """
     Main function for Raspberry Pi posture detection
     Args:
