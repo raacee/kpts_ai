@@ -78,10 +78,15 @@ def calculate_angle(vec1, vec2):
     """
     value = np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
     try:
-        return math.acos(
-            value
-        )
-    except TypeError as err:
+        if value < -1:
+            return 0
+        elif value > 1:
+            return np.pi
+        else:
+            return math.acos(
+                value
+            )
+    except ValueError as err:
         print(value)
         raise err
 

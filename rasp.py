@@ -2,8 +2,7 @@ from picamera2 import Picamera2
 from gpiozero import LED
 from model import get_keypoints
 from body import ANGLES_TO_MONITOR, angle_from_keypoints
-from draw import edge_over_threshold, scale_keypoints, draw_edges_angles, draw_keypoints, draw_edges_lines, \
-    draw_prediction_on_image
+from draw import edge_over_threshold, scale_keypoints, draw_edges_angles, draw_keypoints, draw_edges_lines
 import cv2 as cv
 import math
 
