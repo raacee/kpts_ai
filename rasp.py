@@ -1,10 +1,12 @@
 import sys
 
+import numpy as np
 from picamera2 import Picamera2
 from gpiozero import LED
 from model import get_keypoints
 from body import ANGLES_TO_MONITOR, angle_from_keypoints
-from draw import edge_over_threshold, scale_keypoints, draw_edges_angles, draw_keypoints, draw_edges_lines
+from draw import edge_over_threshold, scale_keypoints, draw_edges_angles, draw_keypoints, draw_edges_lines, \
+    draw_prediction_on_image
 import cv2 as cv
 import math
 
@@ -27,10 +29,7 @@ def main(show=True):
         while True:
             # Capture frame-by-frame
             frame, keypoints_locs, scores = led_detect(camera)
-
-            frame = draw_keypoints(frame, keypoints_locs, scores, threshold)
-            frame, drawn_edges = draw_edges_angles(frame, keypoints_locs, scores, threshold)
-            frame = draw_edges_lines(frame, drawn_edges, keypoints_locs, scores, threshold)
+            frame = draw_prediction_on_image(frame, np.stack([keypoints_locs, scores], axis=1))
             cv.imshow('main', cv.resize(frame, (640, 480)))
 
             if cv.waitKey(1) == ord('q'):
