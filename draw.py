@@ -47,7 +47,7 @@ def draw_edges_lines(image, drawn_edges, keypoints_locs, scores, threshold):
 
 
 def draw_keypoints(image, keypoints_locs, scores, threshold, radius=2, thickness=-1):
-    color = 255, 0, 255
+    color = 255, 0, 0
 
     # Draw the keypoints on the picture
     for keypoint_coords, score in zip(keypoints_locs, scores):
