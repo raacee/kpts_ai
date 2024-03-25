@@ -13,7 +13,7 @@ def main():
     while True:
         # Capture frame-by-frame
         frame = camera.capture_array()
-        frame = frame[:,:,:3]
+        frame = frame[:, :, :3]
         frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 
         resized_frame = cv.resize(frame, (192, 192))
